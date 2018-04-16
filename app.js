@@ -74,12 +74,18 @@ app.put("/users/:id", (req, res, next) => {
   });
 });
 
-app.post("/shows", ({body: { name, network, genre, in_production, directorId }}, res, next) => {
-  Show.create({name, network, genre, in_production, directorId})
-  .then( addedShow => {
-    console.log(addedShow);
-    res.status(201).json(addedShow);
-  });
+app.post("/shows", ({body: { name, network, genre, in_production, directorName }}, res, next) => {
+  Director.find({
+    where: { name: directorName }
+  })
+  .then((selectedDirector) => {
+    const directorId = selectedDirector.id;
+    Show.create({name, network, genre, in_production, directorId})
+    .then( addedShow => {
+      console.log(addedShow);
+      res.status(201).json(addedShow);
+    });
+  })
 })
 
 app.post("/directors", ({body: { name, birth_year, twitter_handle }}, res, next) => {

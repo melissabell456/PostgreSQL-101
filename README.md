@@ -12,3 +12,4 @@
 ### Supports PATCH for updating shows
 
 ### ```http://localhost:3000/director-form``` uses a form to add a new director
+### ```http://localhost:3000/show-form``` uses a form to add a new show
