@@ -59,6 +59,28 @@ app.post("/shows", ({body: { name, network, genre, in_production, directorId }},
   });
 })
 
+app.post("/directors", ({body: { name, birth_year, twitter_handle }}, res, next) => {
+  console.log( name, birth_year, twitter_handle);
+  Director.create({name, birth_year, twitter_handle})
+  .then( addedDirector => {
+    console.log(addedDirector);
+    res.status(201).json(addedDirector);
+  });
+})
+
+app.patch('/shows/:id', ({ params: { id }, body: { updates } }, res) => {
+  const showId = id;
+  Show.find({
+    where: { id: id }
+  })
+    .then(showQ => {
+      return showQ.updateAttributes(updates)
+    })
+    .then(updatedShow => {
+      res.json(updatedShow);
+    });
+});
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
