@@ -8,6 +8,8 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use(express.static(__dirname + '/public', { extensions: "html"}));
+
 //const { Show, Director, User } = require('models');
 // with express, you can add methods to the app.settings
 app.set("models", require("./models"))
@@ -44,11 +46,32 @@ app.post("/favorites", ({body: { UserId, ShowId }}, res, next ) => {
   console.log(UserId, ShowId);
   User.findById(UserId)
   .then( SelectedUser => {
-    SelectedUser.addFavorites(ShowId)
+    SelectedUser.addFavorite(ShowId)
     .then( (newRecord) => {
       res.status(201).json(newRecord);
     });
   })
+});
+
+// adding a favorite for a user
+app.post("/directors", (req, res, next ) => {
+  console.log(req.body);
+  Director.create(req.body)
+  .then( (addedDirector) => {
+    res.status(201).json(addedDirector);
+  })
+});
+
+//if the req.body includes a showId attribute, it adds to the users_favorites join table, if not, updates existing user.
+app.put("/users/:id", (req, res, next) => {
+  User.findById(req.body.id)
+  .then( (foundUser) => {
+    const func = req.body.ShowId ? "addFavorite" : "update";
+    foundUser[func](req.body.ShowId || req.body)
+    .then( (item) => {
+      res.status(201).json
+    });
+  });
 });
 
 app.post("/shows", ({body: { name, network, genre, in_production, directorId }}, res, next) => {
@@ -69,7 +92,6 @@ app.post("/directors", ({body: { name, birth_year, twitter_handle }}, res, next)
 })
 
 app.patch('/shows/:id', ({ params: { id }, body: { updates } }, res) => {
-  const showId = id;
   Show.find({
     where: { id: id }
   })
@@ -77,7 +99,7 @@ app.patch('/shows/:id', ({ params: { id }, body: { updates } }, res) => {
       return showQ.updateAttributes(updates)
     })
     .then(updatedShow => {
-      res.json(updatedShow);
+      res.status(201).json(updatedShow);
     });
 });
 
