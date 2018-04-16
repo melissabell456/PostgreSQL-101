@@ -10,3 +10,5 @@
 ### Supports POST for adding new director/show/user_favorites
 
 ### Supports PATCH for updating shows
+
+### ```http://localhost:3000/director-form``` uses a form to add a new director
